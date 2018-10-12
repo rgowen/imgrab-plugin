@@ -25,9 +25,7 @@ class ImgrabPlugin
     }
     function register()
     {
-        add_action('admin_enqueue_scripts', array($this, 'enqueue'));
         add_action('admin_menu', array( $this, 'add_admin_pages'));
-
         add_filter("plugin_action_links_$this->plugin", array($this, 'settings_link'));
     }
     public function settings_link($links)
