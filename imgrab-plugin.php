@@ -1,0 +1,82 @@
+<?php
+
+/**
+ * @package imgrabPlugin
+ */
+
+/*
+Plugin Name: imgrab
+Plugin URI: none
+Description: A WordPress plugin to add media files to library from the web.
+Version: 2018.1
+Author: Ryan Gowen
+Author URI: http://github.com/rgowen/
+License: GPLv2
+*/
+ 
+defined('ABSPATH') or die('Get out');
+
+class ImgrabPlugin
+{
+    public $plugin;
+    function __construct()
+    {
+        $plugin = plugin_basename(__FILE__);
+    }
+    function register()
+    {
+        add_action('admin_enqueue_scripts', array($this, 'enqueue'));
+        add_action('admin_menu', array( $this, 'add_admin_pages'));
+
+        add_filter("plugin_action_links_$this->plugin", array($this, 'settings_link'));
+    }
+    public function settings_link($links)
+    {
+        $settings_link = '<a href="admin.php?page=imgrab_plugin">Settings</a>';
+        array_push($links, $settings_link);
+    }
+    public function add_admin_pages() 
+    {
+        add_menu_page( 'imgrabPlugin', 'imgrab', 'manage_options', 'imgrab_plugin', array($this, 'admin_index'), 'dashicons-images-alt', 110 );
+    }
+    public function admin_index()
+    {
+        require_once plugin_dir_path(__FILE__).'templates/admin.php';
+    }
+    function activate()
+    {
+        // generate CPT
+        $this->custom_post_type();
+        flush_rewrite_rules();
+    }
+    function deactivate()
+    {
+        flush_rewrite_rules();
+    }
+    function uninstall()
+    {
+        // delete CPT
+    }
+    function custom_post_type() 
+    {
+        register_post_type( 'book', ['public' => true, 'label' => 'books' ] );
+    }
+    function enqueue() 
+    {
+        wp_enqueue_script('jquery');
+        wp_enqueue_style('mypluginstyle', plugins_url('/assets/style.css', __FILE__));
+        wp_enqueue_script('imgrab', plugins_url('/assets/imgrab.js', __FILE__));
+
+    }
+}
+
+if( class_exists('imgrabPlugin'))
+{
+    $imgrabPlugin = new imgrabPlugin('initialized');
+    $imgrabPlugin->register();
+}
+
+//activate
+register_activation_hook( __FILE__, array($imgrabPlugin, 'activate'));
+//deactive
+register_deactivation_hook(__FILE__, array($imgrabPlugin, 'deactivate'));
