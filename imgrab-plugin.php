@@ -43,31 +43,6 @@ class ImgrabPlugin
     {
         require_once plugin_dir_path(__FILE__).'templates/admin.php';
     }
-    function activate()
-    {
-        // generate CPT
-        $this->custom_post_type();
-        flush_rewrite_rules();
-    }
-    function deactivate()
-    {
-        flush_rewrite_rules();
-    }
-    function uninstall()
-    {
-        // delete CPT
-    }
-    function custom_post_type() 
-    {
-        register_post_type( 'book', ['public' => true, 'label' => 'books' ] );
-    }
-    function enqueue() 
-    {
-        wp_enqueue_script('jquery');
-        wp_enqueue_style('mypluginstyle', plugins_url('/assets/style.css', __FILE__));
-        wp_enqueue_script('imgrab', plugins_url('/assets/imgrab.js', __FILE__));
-
-    }
 }
 
 if( class_exists('imgrabPlugin'))
